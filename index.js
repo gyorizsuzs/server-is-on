@@ -54,18 +54,21 @@ const getId = (req, res) => {
 };
 
 const getStatus = (req, res) => {
-  const status = req.params.status;
+  /* const status = req.params.status; */
   const active = students.find((el) => el.status === true);
   const finished = students.find((el) => el.status === false);
 
-  fs.readFile(file, (err, data) => {
-    if (err) throw err;
-    const students = JSON.parse(data);
-    res.setHeader("content-type", "application/json");
-    const student = students.find((student) => student.status == status);
-
-    res.send(student.active);
-  });
+  if (req.params.status === true) {
+    return res.status(200).json({
+      status: active,
+      message: "Student is active",
+    });
+  } else {
+    return res.status(200).json({
+      status: finished,
+      message: "Student has finished",
+    });
+  }
 };
 
 const createStudent = (req, res) => {
@@ -84,6 +87,7 @@ const createStudent = (req, res) => {
           newStudent,
         },
       });
+      res.send(student);
     }
   );
 };
