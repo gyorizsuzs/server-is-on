@@ -64,13 +64,13 @@ const getStatus = (req, res) => {
     res.setHeader("content-type", "application/json");
     const student = students.find((student) => student.status == status);
 
-    res.send(student);
+    res.send(student.active);
   });
 };
 
 const createStudent = (req, res) => {
   const newStudent = students[students.lenght + 1];
-  /* const newStudent = Object.assign({ id: newId }, req.body); */
+  /* const newName = Object.assign({ name: newName }, req.body); */
 
   students.push(newStudent);
 
