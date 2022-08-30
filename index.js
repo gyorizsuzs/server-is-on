@@ -31,7 +31,6 @@ const getStudent = (req, res) => {
 }; */
   res.status(200).json({
     status: "success",
-    results: students.length,
     data: {
       students,
     },
@@ -53,9 +52,9 @@ const getId = (req, res) => {
   });
 };
 
-const getStatus = (req, res) => {
-  /* const status = req.params.status; */
-  const active = students.find((el) => el.status === true);
+/* const getStatus = (req, res) => { */
+/* const status = req.params.status; */
+/*   const active = students.find((el) => el.status === true);
   const finished = students.find((el) => el.status === false);
 
   if (req.params.status === true) {
@@ -69,11 +68,38 @@ const getStatus = (req, res) => {
       message: "Student has finished",
     });
   }
+}; */
+
+//Jani féle megoldás - ebben a kornyezetben nem mukodik
+const getStatus = (req, res) => {
+  let status;
+  if (req.params.status === "active") {
+    status = true;
+  } else if (req.params.status === "finished") {
+    status = false;
+  } else {
+    res.send("Status is not found!");
+    return null;
+  }
+  const file = __dirname + "/data/students.json";
+  fs.readFile(file, (err, data) => {
+    const students = JSON.parse(data);
+    res.setHeader("content-type", "application/json");
+    if (err) throw err;
+    const isActive = students.filter((student) => {
+      return student.status === status;
+    });
+    res.send(isActive);
+  });
 };
 
 const createStudent = (req, res) => {
-  const newStudent = students[students.lenght + 1];
-  /* const newName = Object.assign({ name: newName }, req.body); */
+  const newStudent = {
+    id: students.length + 1,
+    name: req.body.name,
+    status: true,
+  };
+  /* const newName = Object.assign({ name: newStudent }, req.body); */
 
   students.push(newStudent);
 
@@ -81,13 +107,13 @@ const createStudent = (req, res) => {
     `${__dirname}/data/students.json`,
     JSON.stringify(students),
     (err) => {
-      res.status(201).json({
-        status: "success",
-        data: {
-          newStudent,
-        },
-      });
-      res.send(student);
+      if (err) {
+        res.status(500).send(err);
+      } else {
+        res.status(201).send({
+          status: "created",
+        });
+      }
     }
   );
 };
@@ -97,7 +123,7 @@ const createStudent = (req, res) => {
 app.get("/", getAllStudents);
 app.get("/api/students", getStudent);
 app.get("/api/students/:id", getId);
-app.get("/api/students/:status", getStatus);
+app.get("/api/status/:status", getStatus);
 app.post("/api/students", createStudent);
 
 app.listen(port, () => {
