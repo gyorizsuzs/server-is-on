@@ -70,7 +70,6 @@ const getId = (req, res) => {
   }
 }; */
 
-//Jani féle megoldás - ebben a kornyezetben nem mukodik
 const getStatus = (req, res) => {
   let status;
   if (req.params.status === "active") {
